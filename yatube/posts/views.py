@@ -9,9 +9,10 @@ from .forms import CommentForm, PostForm
 from .models import Post, Group, Follow
 
 User = get_user_model()
+CACHE_OF_PAGE_TWENTY = 20
 
 
-@cache_page(20)
+@cache_page(CACHE_OF_PAGE_TWENTY)
 def index(request):
     post_list = Post.objects.select_related('group')
     page_obj = paginations(request, post_list)
@@ -49,12 +50,10 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.all()
     form = CommentForm()
     context = {
         'post': post,
         'requser': request.user,
-        'comments': comments,
         'form': form,
     }
     return render(request, 'posts/post_detail.html', context)
